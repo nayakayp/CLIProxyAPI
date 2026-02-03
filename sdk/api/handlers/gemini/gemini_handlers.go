@@ -56,8 +56,16 @@ func (h *GeminiAPIHandler) GeminiModels(c *gin.Context) {
 		for k, v := range model {
 			normalizedModel[k] = v
 		}
-		if name, ok := normalizedModel["name"].(string); ok && name != "" && !strings.HasPrefix(name, "models/") {
-			normalizedModel["name"] = "models/" + name
+		if name, ok := normalizedModel["name"].(string); ok && name != "" {
+			if !strings.HasPrefix(name, "models/") {
+				normalizedModel["name"] = "models/" + name
+			}
+			if displayName, _ := normalizedModel["displayName"].(string); displayName == "" {
+				normalizedModel["displayName"] = name
+			}
+			if description, _ := normalizedModel["description"].(string); description == "" {
+				normalizedModel["description"] = name
+			}
 		}
 		if _, ok := normalizedModel["supportedGenerationMethods"]; !ok {
 			normalizedModel["supportedGenerationMethods"] = defaultMethods
